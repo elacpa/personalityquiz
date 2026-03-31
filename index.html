@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Who Are You in the Secret Annex?</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Source Sans 3', sans-serif;
+      background-color: #f5ede0;
+      background-image: repeating-linear-gradient(transparent, transparent 27px, #c8b89a44 27px, #c8b89a44 28px);
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1, h2, h3 { font-family: 'Lora', Georgia, serif; }
+
+    .screen { width: 100%; max-width: 560px; }
+
+    .card {
+      background: linear-gradient(135deg, #fff8ee 0%, #fdefd8 100%);
+      border: 1.5px solid #c8a96e;
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #b07a3a;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 0 0 8px;
+    }
+
+    .ans-btn {
+      width: 100%;
+      text-align: left;
+      border: 1.5px solid #c8a96e;
+      background: #fffaf3;
+      color: #3d2b1f;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+      font-family: 'Source Sans 3', sans-serif;
+      line-height: 1.4;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .ans-btn:hover { background: #c8a96e; color: #fff; border-color: #c8a96e; transform: translateX(3px); }
+    .ans-btn.selected { background: #7a4f2e; color: #fff; border-color: #7a4f2e; }
+
+    .nav-btn {
+      border: 1.5px solid #c8a96e;
+      background: #fffaf3;
+      color: #3d2b1f;
+      border-radius: 99px;
+      padding: 9px 28px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'Source Sans 3', sans-serif;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .nav-btn:hover:not(:disabled) { background: #c8a96e; color: #fff; }
+    .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .nav-btn.ghost { background: transparent; border-color: transparent; color: #8b5e2f; padding-left: 0; }
+
+    .progress-track { background: #e5d5b8; border-radius: 99px; height: 8px; overflow: hidden; }
+    .progress-fill { height: 8px; border-radius: 99px; background: linear-gradient(90deg, #c8a96e, #7a4f2e); transition: width 0.4s ease; }
+
+    .trait-pill {
+      background: linear-gradient(135deg, #7a4f2e, #4a2c17);
+      color: #fdefd8;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 12px;
+      display: inline-block;
+      margin: 3px;
+    }
+
+    .char-card {
+      background: #fffaf3;
+      border: 1px solid #e0c99a;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+    }
+
+    .divider { border-top: 1px solid #dcc99a; padding-top: 1rem; margin-top: 1rem; }
+
+    .hidden { display: none !important; }
+
+    .fade-in { animation: fadeIn 0.4s ease forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+
+  <!-- START -->
+  <div id="s-start" class="screen fade-in">
+    <div style="text-align:center; margin-bottom:1.5rem;">
+      <div style="font-size:52px; margin-bottom:10px;">📔</div>
+      <h1 style="font-size:26px; font-weight:700; color:#5c2e0a; line-height:1.2; margin-bottom:10px;">Who Are You in the Secret Annex?</h1>
+      <p style="font-family:'Lora',serif; font-style:italic; color:#8b5e2f; font-size:15px;">A personality quiz inspired by <em>The Diary of a Young Girl</em></p>
+    </div>
+    <div class="card">
+      <p style="color:#5c2e0a; font-size:14px; line-height:1.7; margin-bottom:12px;">From July 1942 to August 1944, eight people hid together in a set of rooms above Otto Frank's business in Amsterdam. Each person had a unique personality that shaped life in the Secret Annex.</p>
+      <p style="color:#5c2e0a; font-size:14px; line-height:1.7;">Answer <strong>7 questions</strong> honestly to discover which resident you are most like — and meet some characters from movies and books who share your personality!</p>
+    </div>
+    <div style="text-align:center;">
+      <button class="nav-btn" onclick="startQuiz()" style="font-size:15px; padding:11px 36px;">Begin the Quiz ✦</button>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="s-quiz" class="screen hidden">
+    <div style="margin-bottom:1rem;">
+      <div style="display:flex; justify-content:space-between; font-size:12px; color:#8b5e2f; font-weight:600; margin-bottom:5px;">
+        <span id="q-label">Question 1 of 7</span>
+        <span id="q-pct">0%</span>
+      </div>
+      <div class="progress-track"><div id="prog-bar" class="progress-fill" style="width:0%"></div></div>
+    </div>
+    <div class="card">
+      <p id="q-num" class="section-label"></p>
+      <h2 id="q-text" style="font-size:17px; color:#4a2410; margin-bottom:1.25rem; line-height:1.4; font-weight:600;"></h2>
+      <div id="q-answers"></div>
+    </div>
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <button id="btn-back" class="nav-btn ghost" onclick="goBack()">← Back</button>
+      <button id="btn-next" class="nav-btn" onclick="nextQ()" disabled>Next →</button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="s-result" class="screen hidden">
+    <div style="text-align:center; margin-bottom:1rem;">
+      <div id="r-emoji" style="font-size:52px; margin-bottom:8px;"></div>
+      <p class="section-label" style="text-align:center; letter-spacing:0.1em;">You are most like…</p>
+      <h2 id="r-name" style="font-size:28px; font-weight:700; color:#4a2410; margin:4px 0;"></h2>
+      <p id="r-years" style="font-size:12px; color:#8b5e2f; font-style:italic;"></p>
+    </div>
+    <div class="card">
+      <p class="section-label">Who they were</p>
+      <p id="r-desc" style="color:#4a2410; font-size:14px; line-height:1.7;"></p>
+      <div class="divider">
+        <p class="section-label">Your personality traits</p>
+        <div id="r-traits"></div>
+      </div>
+      <div class="divider">
+        <p class="section-label" style="text-align:center; letter-spacing:0.1em;">✦ Characters like you ✦</p>
+        <div id="r-chars"></div>
+      </div>
+    </div>
+    <div style="text-align:center;">
+      <button class="nav-btn" onclick="resetQuiz()">Retake the Quiz</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      { text: "Your class is assigned a group project. How do you handle it?", answers: [
+        { text: "I take charge and make sure everyone has a role — I want us to succeed together.", scores: { otto:3, anne:1 } },
+        { text: "I quietly do my part perfectly and try not to rock the boat.", scores: { margot:3, peter:1 } },
+        { text: "I write down all my thoughts and observations about the group dynamics.", scores: { anne:3 } },
+        { text: "I make sure everyone knows what I think the plan should be.", scores: { auguste:3 } },
+        { text: "I go along with whatever the group decides but help where I can.", scores: { edith:2, hermann:2 } },
+        { text: "I feel awkward in the group but do a solid job on my own section.", scores: { peter:3 } },
+      ]},
+      { text: "How do you react when two of your friends are in an argument?", answers: [
+        { text: "I step in calmly and help them work it out — someone has to.", scores: { otto:3 } },
+        { text: "I notice every detail and form strong opinions about who's right.", scores: { anne:3 } },
+        { text: "I stay out of it and hope it passes on its own.", scores: { margot:2, peter:2 } },
+        { text: "I make sure everyone hears my take on the situation.", scores: { auguste:3 } },
+        { text: "I try to quietly support the person I'm closest to.", scores: { edith:3 } },
+        { text: "I try to lighten the mood with a small gesture or joke.", scores: { hermann:3 } },
+      ]},
+      { text: "You have a free afternoon all to yourself. What do you do?", answers: [
+        { text: "Read, study, or work on a meaningful project.", scores: { margot:3, otto:1 } },
+        { text: "Write in my journal, draw, or create something.", scores: { anne:3 } },
+        { text: "Get my nails done, reorganize my room, or focus on how things look.", scores: { auguste:3 } },
+        { text: "Hang out somewhere quiet — maybe just sit with a pet or by a window.", scores: { peter:3 } },
+        { text: "Cook or take care of chores — I feel best when things are in order.", scores: { edith:2, hermann:1 } },
+        { text: "Catch up with people I care about or plan something for the family.", scores: { otto:2, hermann:2 } },
+      ]},
+      { text: "Which describes how you deal with stress?", answers: [
+        { text: "I stay calm and rational — panicking doesn't help anyone.", scores: { otto:3 } },
+        { text: "I process it by writing or reflecting deeply on my feelings.", scores: { anne:3 } },
+        { text: "I get quiet and withdraw until I feel ready to face it.", scores: { margot:2, peter:2 } },
+        { text: "I express my feelings openly — maybe more dramatically than I should.", scores: { auguste:3 } },
+        { text: "I focus on taking care of others, which helps me feel useful.", scores: { edith:3 } },
+        { text: "I try to stay cheerful and keep things light for everyone else.", scores: { hermann:3 } },
+      ]},
+      { text: "A new student joins your school. How do you respond?", answers: [
+        { text: "I welcome them warmly and make sure they're included.", scores: { otto:3, anne:1 } },
+        { text: "I observe them carefully and think about what kind of person they are.", scores: { anne:3 } },
+        { text: "I give them a friendly nod but let them come to me when they're ready.", scores: { margot:2, peter:2 } },
+        { text: "I immediately notice how they dress and carry themselves.", scores: { auguste:3 } },
+        { text: "I make sure they feel comfortable and check in quietly.", scores: { edith:2 } },
+        { text: "I make small talk easily — I like meeting new people.", scores: { hermann:3 } },
+      ]},
+      { text: "Which statement sounds most like something you'd say?", answers: [
+        { text: '"I want to understand people — even the ones who frustrate me."', scores: { anne:3 } },
+        { text: '"Someone has to be the responsible one, and I don\'t mind it being me."', scores: { otto:3 } },
+        { text: '"I\'d rather do things right and quietly than make a big deal about it."', scores: { margot:3 } },
+        { text: '"I just want things to be the way I like them — is that too much to ask?"', scores: { auguste:3 } },
+        { text: '"I care most about keeping the people I love safe and together."', scores: { edith:3 } },
+        { text: '"I keep to myself mostly, but I notice more than people think."', scores: { peter:3 } },
+        { text: '"Life is hard, but staying in good spirits helps."', scores: { hermann:3 } },
+      ]},
+      { text: "Your honest friends would describe you as…", answers: [
+        { text: "Curious, outspoken, and perceptive — sometimes a little too honest.", scores: { anne:3 } },
+        { text: "Steady, wise, and someone people naturally turn to for advice.", scores: { otto:3 } },
+        { text: "Dedicated, careful, and modest — you don't need the spotlight.", scores: { margot:3 } },
+        { text: "Spirited and expressive — you have very clear opinions about things.", scores: { auguste:3 } },
+        { text: "Devoted and nurturing — you put your family first, always.", scores: { edith:3 } },
+        { text: "Reserved but kind — you open up slowly but genuinely.", scores: { peter:3 } },
+        { text: "Easygoing and warm — a team player with a good sense of humor.", scores: { hermann:3 } },
+      ]},
+    ];
+
+    const characters = {
+      anne:    { name:"Anne Frank",        emoji:"📔", years:"Age 13–15 during the Secret Annex years", description:"Anne was the heart of the diary — curious, deeply observant, and unafraid to speak her mind. She had big dreams, wrestled with her identity, and saw writing as her way of making sense of an impossible situation.", traits:["Curious","Outspoken","Reflective","Creative","Observant"], refs:[{name:"Hermione Granger",source:"Harry Potter",why:"Bookish, opinionated, and determined to understand the world around her."},{name:"Katniss Everdeen",source:"The Hunger Games",why:"A young person who processes the world through sharp observation and inner strength."},{name:"Mia Thermopolis",source:"The Princess Diaries",why:"Keeps a diary, is figuring out who she is, and speaks her mind — often at the wrong moment."}]},
+      otto:    { name:"Otto Frank",         emoji:"🧭", years:"Age 53–55 during the Secret Annex years", description:"Otto was the calm anchor of the group. An educated, thoughtful businessman, he kept morale up and managed conflicts with patience. He was the only Annex resident to survive the war.", traits:["Calm","Wise","Leadership","Responsible","Patient"], refs:[{name:"Atticus Finch",source:"To Kill a Mockingbird",why:"A steady, moral father figure who keeps his head when others lose theirs."},{name:"Mufasa",source:"The Lion King",why:"A wise and protective leader who puts the wellbeing of others above himself."},{name:"Professor Dumbledore",source:"Harry Potter",why:"Calm wisdom in chaotic times — always thinking of the bigger picture."}]},
+      edith:   { name:"Edith Frank",        emoji:"🕯️", years:"Age 42–44 during the Secret Annex years", description:"Edith was quiet and reserved, deeply devoted to her family. Her relationship with Anne was complicated, but her love and sacrifice for her children never wavered. Her resilience was quiet and real.", traits:["Devoted","Reserved","Nurturing","Protective","Selfless"], refs:[{name:"Molly Weasley",source:"Harry Potter",why:"A fiercely devoted mother whose love for her family is her defining strength."},{name:"Marmee March",source:"Little Women",why:"A quietly strong maternal figure who sacrifices everything for her children."},{name:"Queen Elinor",source:"Brave (Pixar)",why:"Reserved and traditional, but deeply loving — sometimes misunderstood by her daughter."}]},
+      margot:  { name:"Margot Frank",       emoji:"📚", years:"Age 16–18 during the Secret Annex years", description:"Margot was the studious, reserved older sister — diligent, responsible, and rarely in conflict with anyone. Where Anne was loud and lively, Margot was the quiet example of poise and discipline.", traits:["Studious","Reserved","Disciplined","Modest","Dependable"], refs:[{name:"Padma Patil",source:"Harry Potter",why:"Quietly capable and often overlooked next to a louder personality."},{name:"Beth March",source:"Little Women",why:"The quiet, gentle sibling who holds the family together without seeking recognition."},{name:"Violet Baudelaire",source:"A Series of Unfortunate Events",why:"A responsible older sibling who keeps things together under pressure."}]},
+      hermann: { name:"Hermann van Pels",   emoji:"🤝", years:"Age 42–44 during the Secret Annex years", description:"Hermann was a friendly, practical man — a businessman and colleague of Otto's. He kept his spirits up and tried to maintain a sense of normalcy.", traits:["Friendly","Practical","Easygoing","Sociable","Grounded"], refs:[{name:"Phil Dunphy",source:"Modern Family",why:"Good-natured, tries to keep things light, sometimes clashes with a more dramatic partner."},{name:"Sam Gamgee",source:"The Lord of the Rings",why:"Steady, warm, and loyal — a practical backbone under pressure."},{name:"Mr. Weasley",source:"Harry Potter",why:"Cheerful, hardworking, and genuinely good-hearted in difficult times."}]},
+      auguste: { name:"Auguste van Pels",   emoji:"💄", years:"Age 41–43 during the Secret Annex years", description:"Auguste was expressive and opinionated — Anne often described her as dramatic and vain. But beneath that, she was a woman trying to maintain dignity and her sense of self in an unbearable situation.", traits:["Expressive","Dramatic","Opinionated","Proud","Passionate"], refs:[{name:"Miranda Priestly",source:"The Devil Wears Prada",why:"Strong personality, very particular about how things should be done."},{name:"Effie Trinket",source:"The Hunger Games",why:"Dramatic, appearance-focused, and always has an opinion — but means well."},{name:"Sharpay Evans",source:"High School Musical",why:"Expressive, loves attention, and has strong views on how things should go."}]},
+      peter:   { name:"Peter van Pels",     emoji:"🐱", years:"Age 16–18 during the Secret Annex years", description:"Peter was shy and introverted, preferring the company of his cat Mouschi to most people. He opened up slowly, and Anne fell briefly in love with him. He was sensitive underneath his quiet exterior.", traits:["Shy","Introverted","Sensitive","Observant","Gentle"], refs:[{name:"Will Byers",source:"Stranger Things",why:"Quiet and sensitive, feels things deeply but doesn't always show it."},{name:"Charlie",source:"The Perks of Being a Wallflower",why:"Introverted and thoughtful — notices everything, says little."},{name:"Newt Scamander",source:"Fantastic Beasts",why:"Prefers animals to people, shy in social situations but deeply caring."}]},
+    };
+
+    let cur = 0, answers = [], scores = {};
+
+    function resetScores() {
+      scores = { anne:0, otto:0, edith:0, margot:0, hermann:0, auguste:0, peter:0 };
+    }
+
+    function show(id) {
+      ['s-start','s-quiz','s-result'].forEach(s => {
+        const el = document.getElementById(s);
+        el.classList.add('hidden');
+        el.classList.remove('fade-in');
+      });
+      const target = document.getElementById(id);
+      target.classList.remove('hidden');
+      void target.offsetWidth;
+      target.classList.add('fade-in');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function startQuiz() { cur = 0; answers = []; resetScores(); show('s-quiz'); renderQ(); }
+
+    function renderQ() {
+      const q = questions[cur];
+      document.getElementById('q-label').textContent = `Question ${cur + 1} of ${questions.length}`;
+      const pct = Math.round(cur / questions.length * 100);
+      document.getElementById('q-pct').textContent = pct + '%';
+      document.getElementById('prog-bar').style.width = pct + '%';
+      document.getElementById('q-num').textContent = `Question ${cur + 1}`;
+      document.getElementById('q-text').textContent = q.text;
+
+      const cont = document.getElementById('q-answers');
+      cont.innerHTML = '';
+      q.answers.forEach((a, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'ans-btn' + (answers[cur] === i ? ' selected' : '');
+        btn.textContent = a.text;
+        btn.onclick = () => selectAns(i);
+        cont.appendChild(btn);
+      });
+
+      document.getElementById('btn-next').disabled = answers[cur] === undefined;
+      document.getElementById('btn-back').style.visibility = cur === 0 ? 'hidden' : 'visible';
+    }
+
+    function selectAns(i) {
+      answers[cur] = i;
+      document.querySelectorAll('#q-answers .ans-btn').forEach((b, idx) => b.classList.toggle('selected', idx === i));
+      document.getElementById('btn-next').disabled = false;
+    }
+
+    function nextQ() {
+      if (answers[cur] === undefined) return;
+      if (cur < questions.length - 1) { cur++; renderQ(); }
+      else calcResult();
+    }
+
+    function goBack() { if (cur > 0) { cur--; renderQ(); } }
+
+    function calcResult() {
+      resetScores();
+      answers.forEach((ai, qi) => {
+        const s = questions[qi].answers[ai].scores;
+        for (const [k, v] of Object.entries(s)) scores[k] = (scores[k] || 0) + v;
+      });
+      document.getElementById('q-pct').textContent = '100%';
+      document.getElementById('prog-bar').style.width = '100%';
+      const winner = Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
+      showResult(winner);
+    }
+
+    function showResult(key) {
+      const c = characters[key];
+      document.getElementById('r-emoji').textContent = c.emoji;
+      document.getElementById('r-name').textContent = c.name;
+      document.getElementById('r-years').textContent = c.years;
+      document.getElementById('r-desc').textContent = c.description;
+      document.getElementById('r-traits').innerHTML = c.traits.map(t => `<span class="trait-pill">${t}</span>`).join('');
+      document.getElementById('r-chars').innerHTML = c.refs.map(r => `
+        <div class="char-card">
+          <p style="font-weight:600; color:#4a2410; font-size:14px; margin:0 0 4px;">
+            ${r.name} <span style="font-weight:400; color:#8b5e2f; font-size:13px;">— <em>${r.source}</em></span>
+          </p>
+          <p style="color:#7a5230; font-size:13px; margin:0; line-height:1.5;">${r.why}</p>
+        </div>`).join('');
+      show('s-result');
+    }
+
+    function resetQuiz() { show('s-start'); }
+  </script>
+</body>
+</html>
